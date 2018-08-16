@@ -1,0 +1,12 @@
+select v.id as view_id, v.name as view_name, w.id as workbook_id, w.name as workbook_name, s.id as site_id, s.name as site_name, project_name, v.created_at as view_created_at, 
+case when (s.id)<> 1 
+then
+concat('/site/',s.url_namespace,'/views/',v.view_url)
+else
+concat('/views/',v.view_url)
+end as tabjolt_url
+from "_views" v inner join "_workbooks" w
+on v.workbook_id = w.id
+inner join _sites s
+on w.site_id = s.id
+order by project_name, w.id

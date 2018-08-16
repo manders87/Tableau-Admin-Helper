@@ -1,0 +1,81 @@
+SELECT distinct datasources.id,
+    datasources.name,
+    datasources.repository_url AS datasource_url,
+    datasources.owner_id,
+	data_connections.owner_type,
+    owner.name AS owner_name,
+    datasources.created_at,
+    datasources.updated_at,
+    datasources.size,
+    datasources.project_id,
+	datasources.document_version as Tableau_Version,
+    projects.name AS project_name,
+    data_connections.server,
+    data_connections.dbclass,
+    data_connections.port,
+    data_connections.username,
+    data_connections.dbname,
+    users.system_user_id,
+    data_connections.site_id,
+	sites.name,
+    domains.id AS domain_id,
+    domains.name AS domain_name
+FROM datasources,
+    system_users owner,
+    projects,
+    data_connections,
+    users,
+    domains,
+    sites
+WHERE datasources.id = data_connections.owner_id 
+AND datasources.owner_id = users.id 
+AND datasources.project_id = projects.id 
+AND data_connections.owner_type::text = 'Datasource'::text 
+AND users.system_user_id = owner.id 
+AND data_connections.site_id = users.site_id 
+AND owner.domain_id = domains.id
+AND users.site_id = sites.id
+UNION ALL
+SELECT distinct datasources.id,
+    datasources.name,
+    datasources.repository_url AS datasource_url,
+    datasources.owner_id,
+	data_connections.owner_type,
+    owner.name AS owner_name,
+    datasources.created_at,
+    datasources.updated_at,
+    datasources.size,
+    datasources.project_id,
+	datasources.document_version as Tableau_Version,
+    projects.name AS project_name,
+    data_connections.server,
+    data_connections.dbclass,
+    data_connections.port,
+    data_connections.username,
+    data_connections.dbname,
+    data_connections.site_id,
+    0 as system_user_id,
+	sites.name,
+    domains.id AS domain_id,
+    domains.name AS domain_name
+FROM datasources,
+    _workbooks owner,
+    projects,
+    data_connections,
+    users,
+    domains,
+	sites
+WHERE datasources.id = data_connections.owner_id 
+AND datasources.owner_id = owner.id 
+AND datasources.project_id = projects.id 
+AND data_connections.owner_type::text = 'Workbook'::text 
+AND data_connections.site_id = owner.site_id 
+AND owner.domain_id = domains.id
+AND owner.site_id = sites.id
+Order by 1 asc
+;
+	
+	
+	
+	
+
